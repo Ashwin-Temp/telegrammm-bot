@@ -91,6 +91,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "--write-info-json",
             "-f", "bestvideo+bestaudio/best",
             "--merge-output-format", "mp4",
+            "--remux-video", "mp4",
             "-o", str(video_path_template),
             url,
         ]
@@ -190,3 +191,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
