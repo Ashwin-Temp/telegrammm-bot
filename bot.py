@@ -95,8 +95,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "yt-dlp",
             "--no-check-certificate",
             "--write-info-json",
-            # Limit download quality to a maximum height of 720p
-            "-f", "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best",
+            # Select best video/audio under 720p and remux to MP4 for compatibility
+            "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]",
+            "--remux-video", "mp4",
             "-o", str(video_path_template),
             url,
         ]
@@ -118,7 +119,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # --- Find the downloaded video and metadata files ---
         info_json_path = next(temp_dir.glob("*.info.json"), None)
-        video_path = next((p for p in temp_dir.iterdir() if p.suffix != '.json'), None)
+        # Find the remuxed MP4 file
+        video_path = next(temp_dir.glob("*.mp4"), None)
 
         if not video_path or not info_json_path:
             logger.error(f"Could not find downloaded video or JSON for {shortcode}.")
