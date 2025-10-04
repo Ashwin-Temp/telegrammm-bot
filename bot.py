@@ -26,7 +26,7 @@ try:
 except (ValueError, TypeError):
     raise ValueError("FATAL: ALLOWED_USER_ID environment variable is not a valid integer.")
 
-# --- Logging Configuration (less verbose) ---
+# --- Logging Configuration ---
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
@@ -104,24 +104,23 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         with open(info_json_path, 'r', encoding='utf-8') as f:
             info = json.load(f)
 
-        # ===== THIS IS THE CORRECTED LOGIC =====
-        # Get BOTH the display name and the username
-        display_name = info.get("uploader", "unknown_user") # e.g., "☠️Rostar☠️"
-        username = info.get("uploader_id", display_name)    # e.g., "rostar_official"
+        # ===== THIS IS THE CORRECTED CAPTION LOGIC =====
+        # Get the username (e.g., rostar_official)
+        username = info.get("uploader_id", "unknown_user")
         description = info.get("description", "")
         post_url = info.get("webpage_url", url)
 
         # Escape all parts for Markdown
-        escaped_display_name = escape_markdown_v2(display_name)
+        escaped_username = escape_markdown_v2(username)
         escaped_description = escape_markdown_v2(description)
 
-        # Rebuild the caption in the format you want
+        # Build the caption in the new requested format
         caption = (
-            f"From: [{escaped_display_name}](https://instagram.com/{username})\n"
-            f"Reel: [Click Here]({post_url})\n\n"
+            f"🎥 Credit: @{escaped_username}\n"
+            f"🔗 Reel: [Click here]({post_url})\n\n"
             f"{escaped_description}"
         )
-        # =======================================
+        # ===============================================
 
         if len(caption) > TELEGRAM_CAPTION_LIMIT:
             caption = caption[:TELEGRAM_CAPTION_LIMIT - 4] + "\\.\\.\\."
