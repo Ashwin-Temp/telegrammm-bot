@@ -9,7 +9,6 @@ from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters, CommandHandler
 from telegram.error import TelegramError
-from telegram.request import Request
 
 # ============================ CONFIGURATION ============================
 # --- Load from Environment Variables ---
@@ -179,11 +178,16 @@ def main():
     """Starts the bot."""
     if not all([BOT_TOKEN, TARGET_CHANNEL_ID, ALLOWED_USER_ID]):
         raise ValueError("One or more required environment variables (BOT_TOKEN, TARGET_CHANNEL_ID, ALLOWED_USER_ID) are not set.")
-        
-    # Set custom timeouts to mitigate connection issues. Default is 5.0 seconds.
-    request = Request(connect_timeout=30.0, read_timeout=30.0)
     
-    app = ApplicationBuilder().token(BOT_TOKEN).request(request).build()
+    # --- THIS IS THE UPDATED PART ---
+    # Set custom timeouts using the new method for python-telegram-bot v20+
+    app = (
+        ApplicationBuilder()
+        .token(BOT_TOKEN)
+        .connect_timeout(30.0)
+        .read_timeout(30.0)
+        .build()
+    )
 
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
