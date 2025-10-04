@@ -95,9 +95,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "yt-dlp",
             "--no-check-certificate",
             "--write-info-json",
-            # Select best video/audio under 720p and remux to MP4 for compatibility
+            # Select best video/audio under 720p and merge into an MP4 file
             "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]",
-            "--remux-video", "mp4",
+            "--merge-output-format", "mp4", # Use merge instead of remux for better compatibility
             "-o", str(video_path_template),
             url,
         ]
@@ -119,7 +119,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # --- Find the downloaded video and metadata files ---
         info_json_path = next(temp_dir.glob("*.info.json"), None)
-        # Find the remuxed MP4 file
+        # Find the merged MP4 file
         video_path = next(temp_dir.glob("*.mp4"), None)
 
         if not video_path or not info_json_path:
