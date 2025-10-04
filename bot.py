@@ -59,7 +59,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     if not update.message:
-        return  # ignore non-message updates
+        return
     text = (update.message.text or "").strip()
 
     if user.id != ALLOWED_USER_ID:
@@ -128,7 +128,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Load metadata
         with open(info_json_path, 'r', encoding='utf-8') as f:
             info = json.load(f)
-        username = info.get("uploader_id", "unknown")  # Instagram username
+
+        # Instagram username of the creator
+        username = info.get("uploader_id", "unknown")  # THIS IS THE KEY CHANGE
         description = info.get("description", "")
         post_url = info.get("webpage_url", url)
 
@@ -136,7 +138,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         escaped_username = escape_markdown_v2(username)
         escaped_description = escape_markdown_v2(description)
 
-        # Build caption: credit → link → description
+        # Build caption: credit -> link -> description
         caption = f"🎥 Credit: [@{escaped_username}](https://instagram.com/{escaped_username})\n"
         caption += f"🔗 Reel: [Click here]({post_url})\n"
         caption += f"{escaped_description}"
