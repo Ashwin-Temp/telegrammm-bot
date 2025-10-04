@@ -95,12 +95,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "yt-dlp",
             "--no-check-certificate",
             "--write-info-json",
-            # Select best video/audio under 720p and merge into an MP4 file
-            "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]",
-            "--merge-output-format", "mp4", # Use merge instead of remux for better compatibility
+            "-f", "best[ext=mp4][height<=720]/best",  # Prefer MP4 with both audio+video
+            "--merge-output-format", "mp4",
+            "--remux-video", "mp4",
             "-o", str(video_path_template),
             url,
         ]
+
         
         logger.info(f"Running yt-dlp for shortcode {shortcode}: {' '.join(cmd)}")
         
@@ -207,4 +208,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
