@@ -128,18 +128,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Load metadata
         with open(info_json_path, 'r', encoding='utf-8') as f:
             info = json.load(f)
-        uploader = info.get("uploader", "unknown")
+        username = info.get("uploader_id", "unknown")  # Instagram username
         description = info.get("description", "")
         post_url = info.get("webpage_url", url)
 
         # Escape for MarkdownV2
+        escaped_username = escape_markdown_v2(username)
         escaped_description = escape_markdown_v2(description)
-        escaped_username = escape_markdown_v2(uploader)
 
-        # Build caption with clickable username and "Click here" link
-        caption = f"{escaped_description}\n\n"
-        caption += f"🎥 Credit: [@{escaped_username}](https://instagram.com/{escaped_username})\n"
-        caption += f"🔗 Reel: [Click here]({post_url})"
+        # Build caption: credit → link → description
+        caption = f"🎥 Credit: [@{escaped_username}](https://instagram.com/{escaped_username})\n"
+        caption += f"🔗 Reel: [Click here]({post_url})\n"
+        caption += f"{escaped_description}"
 
         # Truncate if too long
         if len(caption) > TELEGRAM_CAPTION_LIMIT:
@@ -191,5 +191,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
