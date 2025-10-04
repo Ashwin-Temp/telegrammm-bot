@@ -36,6 +36,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# --- THIS IS THE NEW PART TO REDUCE LOG NOISE ---
+# Set higher logging levels for httpx and telegram.ext to avoid spamming the console
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("telegram.ext").setLevel(logging.WARNING)
+# ===============================================
+
 # --- Constants ---
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 SHORTCODE_RE = re.compile(
@@ -179,7 +185,6 @@ def main():
     if not all([BOT_TOKEN, TARGET_CHANNEL_ID, ALLOWED_USER_ID]):
         raise ValueError("One or more required environment variables (BOT_TOKEN, TARGET_CHANNEL_ID, ALLOWED_USER_ID) are not set.")
     
-    # --- THIS IS THE UPDATED PART ---
     # Set custom timeouts using the new method for python-telegram-bot v20+
     app = (
         ApplicationBuilder()
