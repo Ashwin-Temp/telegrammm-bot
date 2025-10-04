@@ -95,7 +95,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "yt-dlp",
             "--no-check-certificate",
             "--write-info-json",
-            "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+            # Limit download quality to a maximum height of 720p
+            "-f", "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best",
             "-o", str(video_path_template),
             url,
         ]
