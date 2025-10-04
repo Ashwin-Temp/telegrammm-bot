@@ -114,7 +114,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await processing_message.edit_text("✅ Download complete. Uploading...")
 
-        # --- Load metadata for credit ---
+        # --- Load metadata for credit and link ---
         with open(info_json_path, "r", encoding="utf-8") as f:
             info = json.load(f)
 
@@ -122,10 +122,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         description = info.get("description", "")
         post_url = info.get("webpage_url", url)
 
-        caption = f"{description}\n\n"
+        # Clickable Instagram username
         if uploader != "unknown":
-            caption += f"🎥 Credit: @{uploader}\n"
-        caption += f"🔗 Link: {post_url}"
+            escaped_username = uploader.replace("_", r"\_")  # escape for MarkdownV2
+            uploader_mention = f"[ @{escaped_username} ](https://instagram.com/{uploader})"
+        else:
+            uploader_mention = "@unknown"
+
+        # Clickable "Click here" for reel link
+        click_here_link = f"[Click here]({post_url})"
+
+        caption = f"{description}\n\n"
+        caption += f"🎥 Credit: {uploader_mention}\n"
+        caption += f"🔗 Reel: {click_here_link}"
 
         if len(caption) > TELEGRAM_CAPTION_LIMIT:
             caption = caption[:TELEGRAM_CAPTION_LIMIT - 3] + "..."
@@ -134,6 +143,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             chat_id=TARGET_CHANNEL_ID,
             video=video_path.read_bytes(),
             caption=caption,
+            parse_mode=ParseMode.MARKDOWN_V2
         )
 
         logger.info(f"✅ Posted {shortcode} to {TARGET_CHANNEL_ID}")
