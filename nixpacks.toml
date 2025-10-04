@@ -1,0 +1,8 @@
+nixpacks.toml
+This file tells Railway's build system (Nixpacks) to install
+specific system-level packages before running the application.
+[phases.setup]
+
+We need ffmpeg because yt-dlp uses it to merge the best video and audio files.
+We also include yt-dlp itself to ensure the command is available.
+nixPkgs = ["pkgs.ffmpeg", "pkgs.yt-dlp"]
